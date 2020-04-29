@@ -31,7 +31,7 @@ router.post('/', async (req,res) => {
         const newItem = new Item({
             name: req.body.name
         });
-        CheckUser(newItem, (err2, item) => {
+        CheckItem(newItem, (err2, item) => {
             if(err2 || !item) {
                 res.status(400).json({ msg: err2});
             }else{
@@ -53,8 +53,9 @@ router.delete('/:id', (req,res) => {
 
 
 
-function CheckUser(item,cb) {
+function CheckItem(item,cb) {
     Item.find({name: item.name}, (err,data) => {
+        console.log(item)
         if(data.length){
             cb('Item already exists', null);
         }else {
