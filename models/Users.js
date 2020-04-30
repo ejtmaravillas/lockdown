@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 const Schema = mongoose.Schema;
 
@@ -51,9 +51,9 @@ var userSchema = new Schema({
 //         next();
 //     }
 //     console.log('password is not modified')
-// }) 
+// });
 
 
 const Users = mongoose.model('User', userSchema);
 
-module.exports = Users;
+module.exports =  Users;
