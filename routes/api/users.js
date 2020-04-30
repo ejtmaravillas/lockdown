@@ -54,7 +54,6 @@ function CheckUserRegister(user,cb) {
 }
 
 function hashPassword(user){
-    
     bcrypt.genSalt(saltRounds, (err, salt) => {
         bcrypt.hash(user.password, salt, function(err,hash){
             user.password = hash;
