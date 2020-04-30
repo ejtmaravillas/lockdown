@@ -1,7 +1,7 @@
 const express = require('express');
 //add router from express
 const router = express.Router();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
 const User = require('../../models/Users');
@@ -44,22 +44,62 @@ function CheckUserRegister(user,cb) {
         }else {
             //hash password from Users model bcrypt userSchema.pre
             console.log('pre save');
-            user = hashPassword(user);
-            user.save((err) => {
-                console.log(user);
-                cb(err,user);
+            //user1 = hashPassword(user);
+            bcrypt.genSalt(saltRounds, (err, salt) => {
+                bcrypt.hash(user.password, salt, (err,hash) => {
+                    user.password = hash;
+                    console.log(user);
+                    user.save((err) => {
+                        cb(err,user);
+                    });
+                });
             });
         }
     });
 }
 
+router.post('/login', (req,res) => {
+    try{
+        User.findOne({email: req.body.email}, (err, user) => {
+            const pass = req.body.password;
+            console.log(`input password: ${pass}`);
+            console.log(`user: ${user}`);
+            if(!user){
+                return res.json({
+                    loginSuccess: false,
+                    message: "Auth failed, email not found"
+                });
+            }            
+            //checkLogin = checkPassword(user, pass);
+            bcrypt.compare(pass,user.password, (err, result) => {
+                if(!result) return res.json({ loginSuccess: false, message: "Wrong password" });
+                return res.json({ loginSuccess: true, message: "Login success"});
+            });
+        });
+    }catch(e) {
+        res.status(400).json({  msg: e.message});
+    }
+});
+
+function checkPassword(user, password){
+    hash = user.password;
+    bcrypt.compare(password,hash, (err, res) => {
+        return res;
+    });
+}
+
 function hashPassword(user){
+<<<<<<< HEAD
+=======
+    const userC = new User(user)
+>>>>>>> 4b5300a791d0600e40cbf30f30d79e530176ea97
     bcrypt.genSalt(saltRounds, (err, salt) => {
-        bcrypt.hash(user.password, salt, function(err,hash){
-            user.password = hash;
+        bcrypt.hash(user.password, salt, (err,hash) => {
+            userC.password = hash;
         });
     });
-    return user
+    console.log(`UserC: ${userC}`);
+    return userC;
 }
 
 module.exports = router;
