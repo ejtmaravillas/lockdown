@@ -19,29 +19,29 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/sample", (req, res) => {
-    User.findOne({ email: req.body.email }, (err, user) => {
-        if (!user)
-            return res.json({
-                loginSuccess: false,
-                message: "Auth failed, email not found"
-            });
+  User.findOne({ email: req.body.email }, (err, user) => {
+    if (!user)
+      return res.json({
+        loginSuccess: false,
+        message: "Auth failed, email not found"
+      });
 
-        user.comparePassword(req.body.password, (err, isMatch) => {
-            if (!isMatch)
-                return res.json({ loginSuccess: false, message: "Wrong password" });
+    user.comparePassword(req.body.password, (err, isMatch) => {
+      if (!isMatch)
+        return res.json({ loginSuccess: false, message: "Wrong password" });
 
-            user.generateToken((err, user) => {
-                if (err) return res.status(400).send(err);
-                res.cookie("w_authExp", user.tokenExp);
-                res
-                    .cookie("w_auth", user.token)
-                    .status(200)
-                    .json({
-                        loginSuccess: true, userId: user._id
-                    });
-            });
-        });
+      user.generateToken((err, user) => {
+        if (err) return res.status(400).send(err);
+        res.cookie("w_authExp", user.tokenExp);
+        res
+          .cookie("w_auth", user.token)
+          .status(200)
+          .json({
+            loginSuccess: true, userId: user._id
+          });
+      });
     });
+  });
 });
 
 router.post("/register", async (req, res) => {
@@ -80,7 +80,7 @@ function CheckUserRegister(user, cb) {
 
 router.post("/login", (req, res) => {
   try {
-      console.log(User)
+    console.log(User)
     User.findOne({ email: req.body.email }, (err, user) => {
       const pass = req.body.password;
       console.log(user);
@@ -94,18 +94,17 @@ router.post("/login", (req, res) => {
         if (!isMatch) {
           return res.json({ loginSuccess: false, message: "Wrong Password" });
         } else {
-            console.log('login password confirmed')
+          console.log('login password confirmed')
         }
-      });
-
-      user.generateToken((err, user) => {
-        if (err) return res.status(400).send(err);
-        res.cookie("x_authExp", user.tokenExp);
-        res.cookie("x_auth", user.token).status(200).json({
-          loginSuccess: true,
-          message: "log in success",
+        user.generateToken((err, user) => {
+          if (err) return res.status(400).send(err);
+          res.cookie("x_authExp", user.tokenExp);
+          res.cookie("x_auth", user.token).status(200).json({
+            loginSuccess: true,
+            message: "log in success",
+          });
+          console.log('token generated');
         });
-        console.log('token generated');
       });
     });
   } catch (e) {
